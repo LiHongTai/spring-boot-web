@@ -31,7 +31,7 @@
         }
 
     </style>
-    <script>
+    <script type="text/javascript">
         $(function(){
             $('#hiredate').datetimepicker({
                 language:  'zh-CN',
@@ -47,9 +47,45 @@
 
             $("#btnAdd").click(function () {
                 $('#dlgForm').modal();
+
+                $.ajax({
+                    url:'/dept',
+                    type:'get',
+                    dataType:'json',
+                    success:function (deptList) {
+                        //$("#dept").get(0)获取原生的DOM对象
+                        //只有原生的DOM对象才会有options等属性
+                        $("#dept").get(0).length = 0;
+                        for(var i = 0; i < deptList.length; i++){
+                            var dept = deptList[i];
+                            $("#dept").get(0).options.add(new Option(dept.dname));
+                        }
+                    }
+                });
+                
+               $("#dept").change(function () {
+                   var dName = $(this).val();
+                   $.ajax({
+                       url:'/job?dName=' + dName,
+                       type:'get',
+                       dataType:'json',
+                       success:function (jobList) {
+                           $("#job").get(0).length = 0;
+                           for(var i = 0; i < jobList.length; i ++){
+                               var job = jobList[i];
+                               $("#job").get(0).options.add(new Option(job));
+                           }
+                       }
+                   });
+               });
+                
             });
 
-        })
+        });
+
+        function previewPhoto() {
+           
+        }
     </script>
 </head>
 <body>
@@ -104,7 +140,7 @@
                     <td th:text="${#dates.format(emp.hiredate,'yyyy年MM月dd日')}"></td>
                     <td th:style="${emp.sal} > 1500 ? 'color:red;font-weight:bold':''">[[${#numbers.formatCurrency(emp.sal)}]]</td>
                     <td style="text-align: center">
-                        <button class="btn btn-xs btn-info"></span>查看照片</button>
+                        <button class="btn btn-xs btn-info" onclick="previewPhoto();">查看照片</button>
                     </td>
                 </tr>
                 </tbody>
@@ -120,32 +156,38 @@
                 <h4 class="modal-title">新增员工</h4>
             </div>
             <div class="modal-body">
-                <form>
+                <!--
+                    文件上传必须满足的三个条件:
+                        1.必须是post请求，因为get请求不能传递二进制数据
+                        2.必须包含file组件
+                        3.form表单的enctype必须是'multipart/form-data',默认为application/x-www-form-urlencoded
+                -->
+                <form action="/addEmp" method="post" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="empno">员工编号</label>
-                        <input type="text" class="form-control" id="empno" placeholder="请输入员工编号">
+                        <input type="text" class="form-control" id="empno" name="empno" placeholder="请输入员工编号">
                     </div>
                     <div class="form-group">
                         <label for="ename">员工姓名</label>
-                        <input type="text" class="form-control" id="ename" placeholder="请输入员工姓名">
+                        <input type="text" class="form-control" id="ename" name="ename" placeholder="请输入员工姓名">
                     </div>
                     <div class="form-group">
                         <label >部门</label>
-                        <select class="form-control">
+                        <select class="form-control" id="dept" name="dname">
                             <option>研发部</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label >岗位</label>
-                        <select class="form-control">
+                        <select class="form-control" id="job" name="job">
                             <option>请选择</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label for="hiredate">入职时间</label>
-                        <input type="text" readonly class="form-control" id="hiredate" placeholder="请选择入职时间">
+                        <input type="text" name="hiredate" readonly class="form-control" id="hiredate" placeholder="请选择入职时间">
                     </div>
 					<div class="form-group">
                         <label for="sal">工资</label>
@@ -153,8 +195,8 @@
                     </div>
 					
                     <div class="form-group">
-                        <label for="phone">员工照片</label>
-                        <input type="file" id="phone">
+                        <label for="photo">员工照片</label>
+                        <input type="file" id="photo" name="photo">
                     </div>
 					<div class="form-group" style="text-align: center;">
                         <button type="submit" class="btn btn-primary">保存</button>

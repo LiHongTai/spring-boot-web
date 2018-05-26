@@ -17,4 +17,5 @@ public class Emp {
     private Date hiredate;
     private Float sal;
     private String dname;
+    private String photoFile;
 }
