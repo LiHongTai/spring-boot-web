@@ -6,6 +6,24 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * DEBUG 模式启动
+ * 热部署配置过程
+ * 1.关闭页面缓存
+ *      spring.thymeleaf.cache = false
+ * 2.在xml中增加devtools
+ *         <dependency>
+ *             <groupId>org.springframework.boot</groupId>
+ *             <artifactId>spring-boot-devtools</artifactId>
+ *         </dependency>
+ * 3.在spring-boot-maven-plugin 添加configuration的fork属性
+ *                 <configuration>
+ *                     <fork>true</fork>
+ *                 </configuration>
+ * 4.修改idea的设置  file -> settings -> build... -> compiler -> auto build project.... 勾选
+ *     Help -> Find Action... -> 输入 registry 确保 compiler.automake.allow.when.app.running 被勾选
+ *
+ */
 @SpringBootApplication
 public class SpringbootWebApplication {
 

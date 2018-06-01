@@ -22,13 +22,13 @@ public class AccessRecorderFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String uri = request.getRequestURI();
-        if(uri.endsWith(".js")
+        if (uri.endsWith(".js")
                 || uri.endsWith(".css")
                 || uri.endsWith(".map")
                 || uri.endsWith(".jpg")
                 || uri.endsWith(".png")
-                ){
-            filterChain.doFilter(servletRequest,servletResponse);
+                ) {
+            filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
 
@@ -36,9 +36,9 @@ public class AccessRecorderFilter implements Filter {
         String ip = request.getRemoteAddr();
         Long startTime = LocalDate.now().toEpochDay();
         //将请求向后推送，到下一个filter或者最终到Controller执行
-        filterChain.doFilter(servletRequest,servletResponse);
+        filterChain.doFilter(servletRequest, servletResponse);
         Long endTime = LocalDate.now().toEpochDay();
-        logger.info("uri:{},ip:{},accessTime:{},userAgent:{}",uri,ip,(endTime-startTime),userAgent);
+        logger.info("uri:{},ip:{},accessTime:{},userAgent:{}", uri, ip, (endTime - startTime), userAgent);
     }
 
     @Override
